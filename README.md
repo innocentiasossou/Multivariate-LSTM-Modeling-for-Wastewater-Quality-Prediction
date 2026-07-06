@@ -1,6 +1,6 @@
-# Template for contribution to Computo
+# Multivariate LSTM Modeling for Wastewater Quality Prediction
 Jane Doe, John Doe
-2026-06-30
+2026-07-06
 
 [![build and
 publish](https://github.com/computorg/template-computo-r/actions/workflows/build.yml/badge.svg)](https://github.com/computorg/template-computo-r/actions/workflows/build.yml)

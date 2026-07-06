@@ -7,30 +7,27 @@ project:
 title: "Multivariate LSTM Modeling for Wastewater Quality Prediction"
 #subtitle: "Example dedicated to `Python` users"
 author:
-  - name: Jane Doe
+  - name: Innocentia Bénédicta Sossou
     corresponding: true
-    email: janedoe@nowhere.moon
-    url: https://janedoe.someplace.themoon.org
-    orcid: 0000-0000-0000-0000
+    email: innocentia-benedicta.sossou@u-pec.fr
+    url: https://sites.google.com/view/innocentia-sossou-en/home
     affiliations:
-      - name: Name of Affiliation one
-        department: Statistics
-        url: https://someplace.themoon.org
-  - name: John Doe
-    email: johndoe@nowhere.moon
-    url: https://johndoe.someplace.themoon.org
-    orcid: 0000-0000-0000-0000
+      - name: Université Paris-Est Créteil, Laboratoire d'Analyse et de Mathématiques Appliquées
+  - name: Sophie Laruelle
+    email: sophie.laruelle@u-pec.fr
+    url: https://perso.math.u-pem.fr/laruelle.sophie/
     affiliations:
-      - name: Name of Affiliation two
-        department: Computer Science
-        url: https://someplace.themoon.org
-date: last-modified
+      - name: Université Paris-Est Créteil, Laboratoire d'Analyse et de Mathématiques Appliquées
+  - name: Jacques Printems
+    email: printems@u-pec.fr
+    url: https://perso.math.u-pem.fr/printems.jacques/
+    affiliations:
+      - name: Université Paris-Est Créteil, Laboratoire d'Analyse et de Mathématiques Appliquées
+date: 06-O7-2026
 date-modified: last-modified
 abstract: >+
-  Template for preparing a submission to Computo, using the [quarto journal extension](https://github.com/computorg/computo-quarto-extension), the Jupyter kernel (Python user) and the environment files to set-up the dependencies.
-
-  For a detailed, step-by-step guide on preparing your article, setting up the continuous integration and submitting it to Computo, please consult the [guidelines for authors](https://computo-journal.org/site/guidelines-authors.html).
-keywords: [key1, key2, key3]
+  The proposed approach relies on high-frequency multivariate time series collected at the Seine aval (SIAAP \footnote{Syndicat Interdépartemental pour l’Assainissement de l’Agglomération Parisienne}) treatment plant, including pH, temperature, conductivity, and total suspended solids, as well as exogenous variables related to precipitation and measurements from an upstream plant. The objective is to forecast wastewater quality over a 24-hour horizon. A multivariate Long Short-Term Memory (LSTM) recurrent neural network is implemented to capture complex temporal dependencies and nonlinear patterns in the data. The model is trained on one year of data and validated on four months of data (one per season), and is compared with a persistence model and SARIMA models. The evaluation shows an overall superiority of the LSTM model, particularly for variables exhibiting high levels of noise and nonlinearity.
+keywords: [Recurrent neural networks, multivariate LSTM, SARIMA, real-time forecasting, wastewater quality, multivariate time series modeling]
 bibliography: references.bib
 github-user: computorg
 repo: "template-computo-r"
