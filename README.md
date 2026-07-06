@@ -1,6 +1,6 @@
 # Multivariate LSTM Modeling for Wastewater Quality Prediction
-Jane Doe, John Doe
-2026-07-06
+Innocentia Bénédicta Sossou, Sophie Laruelle, Jacques Printems
+Invalid Date
 
 [![build and
 publish](https://github.com/computorg/template-computo-r/actions/workflows/build.yml/badge.svg)](https://github.com/computorg/template-computo-r/actions/workflows/build.yml)
@@ -9,18 +9,24 @@ License](https://i.creativecommons.org/l/by/4.0/80x15.png)](http://creativecommo
 
 ### Authors
 
-- [Jane Doe](https://janedoe.someplace.themoon.org) (Name of Affiliation
-  one)
-- [John Doe](https://johndoe.someplace.themoon.org) (Name of Affiliation
-  two)
+- [Innocentia Bénédicta
+  Sossou](https://sites.google.com/view/innocentia-sossou-en/home)
+  (Université Paris-Est Créteil, Laboratoire d’Analyse et de
+  Mathématiques Appliquées)
+- [Sophie Laruelle](https://perso.math.u-pem.fr/laruelle.sophie/)
+  (**?meta:by-affiliation.2.name**)
 
 ### Abstract
 
-Template for preparing a submission to Computo, using the [quarto
-journal
-extension](https://github.com/computorg/computo-quarto-extension), the
-Jupyter kernel (Python user) and the environment files to set-up the
-dependencies. For a detailed, step-by-step guide on preparing your
-article, setting up the continuous integration and submitting it to
-Computo, please consult the [guidelines for
-authors](https://computo-journal.org/site/guidelines-authors.html).
+The proposed approach relies on high-frequency multivariate time series
+collected at the Seine aval (SIAAP ) treatment plant, including pH,
+temperature, conductivity, and total suspended solids, as well as
+exogenous variables related to precipitation and measurements from an
+upstream plant. The objective is to forecast wastewater quality over a
+24-hour horizon. A multivariate Long Short-Term Memory (LSTM) recurrent
+neural network is implemented to capture complex temporal dependencies
+and nonlinear patterns in the data. The model is trained on one year of
+data and validated on four months of data (one per season), and is
+compared with a persistence model and SARIMA models. The evaluation
+shows an overall superiority of the LSTM model, particularly for
+variables exhibiting high levels of noise and nonlinearity.
