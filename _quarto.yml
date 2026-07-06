@@ -4,8 +4,8 @@ project:
     - main.qmd
     - README.qmd
 
-title: "Template for contribution to Computo"
-subtitle: "Example dedicated to `Python` users"
+title: "Multivariate LSTM Modeling for Wastewater Quality Prediction"
+#subtitle: "Example dedicated to `Python` users"
 author:
   - name: Jane Doe
     corresponding: true
