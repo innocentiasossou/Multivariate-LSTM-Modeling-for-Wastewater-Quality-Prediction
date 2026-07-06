@@ -14,11 +14,13 @@ author:
     affiliations:
       - name: Université Paris-Est Créteil, Laboratoire d'Analyse et de Mathématiques Appliquées
   - name: Sophie Laruelle
+    corresponding: true
     email: sophie.laruelle@u-pec.fr
     url: https://perso.math.u-pem.fr/laruelle.sophie/
     affiliations:
       - name: Université Paris-Est Créteil, Laboratoire d'Analyse et de Mathématiques Appliquées
   - name: Jacques Printems
+    corresponding: true
     email: printems@u-pec.fr
     url: https://perso.math.u-pem.fr/printems.jacques/
     affiliations:

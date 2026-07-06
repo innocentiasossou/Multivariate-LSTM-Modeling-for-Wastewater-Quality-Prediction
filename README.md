@@ -15,6 +15,8 @@ License](https://i.creativecommons.org/l/by/4.0/80x15.png)](http://creativecommo
   Mathématiques Appliquées)
 - [Sophie Laruelle](https://perso.math.u-pem.fr/laruelle.sophie/)
   (**?meta:by-affiliation.2.name**)
+- [Jacques Printems](https://perso.math.u-pem.fr/printems.jacques/)
+  (**?meta:by-affiliation.3.name**)
 
 ### Abstract
 
