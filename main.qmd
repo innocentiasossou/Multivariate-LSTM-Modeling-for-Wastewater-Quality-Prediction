@@ -1,6 +1,95 @@
 # Introduction
 
-\hspace{0.5cm} In multiple real-world applications, quantities are measured over time, giving rise to time series. A fundamental question is whether, based on past observations, it is possible to predict the future evolution of a series, either in the short or the long term. To address this issue, numerous studies have been conducted, leading to the development of models capable of representing the behavior of time series based on their main characteristics, such as trend, seasonality, and random fluctuations. Among the most prominent statistical models, the Autoregressive Moving Average (ARMA) framework, introduced by [@box1976analysis], models a series by expressing present values as a function of past observations and error terms. Its extension to non-stationary time series exhibiting seasonal patterns has led to Seasonal Autoregressive Integrated Moving Average (SARIMA) models, which are widely used in practice, particularly in environmental and industrial applications [@effrosynidis2023time]. However, these models rely on linearity assumptions and are therefore limited to capturing linear relationships between observations. In several real-world settings, time series exhibit complex dynamics and nonlinear relationships between variables. To overcome these limitations, machine learning approaches have been developed, particularly recurrent neural networks (RNNs), which are specifically designed to model sequential data. These models rely on an internal state that is continuously updated as new observations become available. Nevertheless, standard RNNs encounter difficulties when dealing with long input sequences, due to the loss of information over time, mainly due to the vanishing gradient problem [@bengio1994learning]. To address these limitations, Long Short-Term Memory (LSTM) architectures, a variant of RNNs introduced by [@hochreiter1997long], have been proposed. These models incorporate both short-term and long-term memory mechanisms, enabling them to capture temporal dependencies over extended periods more effectively. They have since demonstrated strong performance in a wide range of applications, particularly for forecasting complex time series [@zhang2019deep]. The approach is based on a multivariate LSTM model applied to data describing wastewater quality at the inlet of the Seine aval (SIAAP) treatment plant. After presenting the context and the data, the configuration of the different models is detailed, followed by an analysis of the forecasting performance and a comparison of the approaches.
+\hspace{0.5cm} In multiple real-world applications, quantities are measured over time, giving rise to time series. A fundamental question is whether, based on past observations, it is possible to predict the future evolution of a series, either in the short or the long term. To address this issue, numerous studies have been conducted, leading to the development of models capable of representing the behavior of time series based on their main characteristics, such as trend, seasonality, and random fluctuations. Among the most prominent statistical models, the Autoregressive Moving Average (ARMA) framework, introduced by @box1976analysis, models a series by expressing present values as a function of past observations and error terms. Its extension to non-stationary time series exhibiting seasonal patterns has led to Seasonal Autoregressive Integrated Moving Average (SARIMA) models, which are widely used in practice, particularly in environmental and industrial applications [@effrosynidis2023time]. However, these models rely on linearity assumptions and are therefore limited to capturing linear relationships between observations. In several real-world settings, time series exhibit complex dynamics and nonlinear relationships between variables. To overcome these limitations, machine learning approaches have been developed, particularly recurrent neural networks (RNNs), which are specifically designed to model sequential data. These models rely on an internal state that is continuously updated as new observations become available. Nevertheless, standard RNNs encounter difficulties when dealing with long input sequences, due to the loss of information over time, mainly due to the vanishing gradient problem [@bengio1994learning]. To address these limitations, Long Short-Term Memory (LSTM) architectures, a variant of RNNs introduced by @hochreiter1997long, have been proposed. These models incorporate both short-term and long-term memory mechanisms, enabling them to capture temporal dependencies over extended periods more effectively. They have since demonstrated strong performance in a wide range of applications, particularly for forecasting complex time series [@zhang2019deep]. The approach is based on a multivariate LSTM model applied to data describing wastewater quality at the inlet of the Seine aval (SIAAP) treatment plant. After presenting the context and the data, the configuration of the different models is detailed, followed by an analysis of the forecasting performance and a comparison of the approaches.
+
+
+# Case study and datasets
+
+&nbsp;&nbsp;&nbsp; Efficient management of wastewater is a major challenge for large urban areas, both for environmental protection and for the optimization of treatment plant processes. In the Île-de-France region, SIAAP is responsible for the transport and treatment of wastewater, operating a network of approximately $400$ km (Figure @fig-reseau-siaap) of collectors and several treatment plants, including the Seine aval plant (La Frette), one of the largest in Europe.
+
+![The wastewater treatment plants and the 5 outfalls arriving at Seine aval[^siaap]](Pictures/AXE2-F20_anglais_modifié.jpg){#fig-reseau-siaap width=100%}
+
+[^siaap]: Picture from SIAAP -- @innover_assainissement_2023
+
+In this context, the use of high-frequency sensor data, combined with additional information such as precipitation measurements and data from other treatment plant, enables the development of predictive models capable of capturing the multivariate dependencies and temporal dynamics of the series. The objective is to predict wastewater quality (based on the variables pH, temperature, conductivity and total suspended solids (TSS)) at the inlet to the Seine aval (SAV) wastewater treatment plant over a 24-hour time horizon, taking into account historical data, data from the Seine centre (SEC) plant, and precipitation measurements at both treatment plants.
+
+Before reaching the Seine aval pre-treatment plant, wastewater from the five outfalls passes through La Frette, where both admitted and discharged flows into the Seine are measured. On arrival at the Seine aval pretreatment plant from La Frette, the water from the 5 outfalls is qualified (pH, conductivity, and oxidation-reduction potential measurements), then mixed. At the Seine aval plant, the following data are available at a frequency of 15 minutes: conductivity (in $\mu$S/cm), TSS (in mg/L), pH, temperature (in \textdegree C), and total flow (in m$^3$/s) from January 1, 2018, to December 31, 2024. At the Seine centre plant, pH, temperature, and turbidity (NTU[^1]) are available at a frequency of 5 minutes from November 25, 2022, to December 31, 2024. Total flow is also available at the Seine centre plant at a frequency of 5 minutes from January 1, 2022, to June 30, 2025. Precipitation measurements at both treatment plants are available at an hourly frequency from January 1, 2018, to August 18, 2025. All data were resampled to a uniform 15-minute frequency. Additionally, a 6-hour ahead forecast of total flow is available for both treatment plants.
+
+[^1]: Nephelometric Turbidity Unit
+
+The data collected from Seine aval show missing data and wide variations, with peaks that will be difficult to predict, and which can be assumed to be outliers. The Seine centre data show greater variations than the Seine aval data (the sampling frequency is three times higher there). The dataset also contains missing values. Therefore, it is necessary to validate these data before using them in modeling. This analysis was conducted by @innover_assainissement_2023 [see pp. 174–179]. Using the statistical properties of these series and expert assessments, the authors identified coherent value ranges for the various parameters analyzed.
+
+
+# Model configuration
+
+&nbsp;&nbsp;&nbsp; In general, for time series forecasting, when future values are predicted from past observations, several linear models can be used as a first approximation. The simplest approach consists in assuming that the future value is identical to the most recently observed value (persistence model), or in resorting to autoregressive models that exploit past values of the target variable [@box1976analysis]. These approaches rely on the assumption of a linear relationship between past and future observations [@box1976analysis]. However, several studies have shown that real-world time series may exhibit nonlinear dynamics in addition to these classical linear structures. This is the case in @Gasparin2019DeepLF, where electrical load forecasting is addressed. In this context, neural network-based models have been introduced to capture such nonlinear relationships. Recurrent neural networks, and in particular Long Short-Term Memory (LSTM) architectures [@hochreiter1997long], are therefore particularly well suited for multivariate time series forecasting problems involving complex temporal dependencies.
+
+## LSTM model and hyperparameter selection
+
+A multivariate LSTM configuration is used to model and forecast the four variables of interest, namely pH, temperature, conductivity, and TSS. Prior to model training, a Min–Max scaling transformation was applied to normalize the data within the interval $(-1,1)$ over the training and validation sets. Input–output sequences were then constructed using a sliding window approach. An input sequence length of ten days (corresponding to 960 time steps at a 15-minute sampling rate) was used to predict the next $h$ time steps ahead (e.g., $h = 96$ corresponds to a one-day forecasting horizon). Following the model specification, a key issue concerns the selection of its hyperparameters, including the optimization algorithm, the learning rate, the loss function used as the objective function, the number of LSTM layers, and the number of units per layer. As recommended by @geron2022hands, a faster variant of stochastic gradient descent such as Adam (Adaptive moment estimation, @kingma2015adam) is particularly suitable for large-scale neural networks. Recent studies in real-world applications have also adopted Adam [@song2024multi, @yaqoob2025predictive], and it is therefore used in this work. The model is trained using the Huber loss function, which is more robust to outliers than the mean squared error. 
+Finally, a Bayesian grid search procedure is employed to determine the optimal number of layers, the number of units per layer, and the learning rate. 
+
+In summary, the proposed LSTM architecture is characterized by:
+
+```{=latex}
+\begin{center}
+\begin{tikzpicture}[scale=0.78, transform shape]
+
+\draw[fill=blue!5, rounded corners=10pt, line width=1pt] (-7.6,-2.0) rectangle (7.6,2.0);
+
+\node[align=left, font=\normalsize] at (0,0) {
+\begin{tabular}{rl}
+\textcolor{gray}{Input:} & \textbf{$960$ time steps and $12$ features} \\
+\textcolor{gray}{Output:} & \textbf{$h$ time steps} \\
+\textcolor{gray}{Layers:} & \textbf{1 LSTM layer} \\
+\textcolor{gray}{Hidden dimension:} & \textbf{256 units} \\
+\textcolor{gray}{Optimizer:} & \textbf{Adam} \\
+\textcolor{gray}{Stopping:} & \textbf{Early Stopping}
+\end{tabular}
+};
+
+\end{tikzpicture}
+\end{center}
+```
+
+
+## Baseline models
+
+Two benchmark models are used in order to assess the contribution of the LSTM model to the modelling and forecasting of the studied variables.
+
+- First, a persistence model is considered. For a forecasting horizon $h$, the model consists of repeating the observed trajectory over the previous $h$ time steps. In other words, the predicted sequence is given by:
+$$
+\hat{y}_{t+i} = y_{t+i-h}, \quad \text{for } i \in \{1, \dots, h\}.
+$$
+For instance, when $h = 96$ (corresponding to a $24$-hour horizon), the model predicts the next day by reproducing exactly the values observed during the previous day.
+
+- Second, a univariate SARIMA model is fitted for each target variable. A ten-day training window is used for model estimation, from November 27, 2023 at 8:00 p.m. to December 07, 2023 at 7:45 p.m. Both graphical analysis and a periodogram-based test reveal a daily seasonality, leading to $s=96$. The remaining hyperparameters are selected following the methodology of @box1976analysis. 
+
+Table @tbl-sarima summarizes the selected parameters for each variable. These models serve as linear and naive benchmarks against which the nonlinear LSTM model is evaluated.
+
+| Time series | Models |
+|:------------|:-------|
+| Conductivity SAV | SARIMA$(1,1,1)-(0,1,1)_{96}$ |
+| pH SAV | SARIMA$(1,0,1)-(0,1,1)_{96}$ |
+| Temperature SAV | SARIMA$(1,1,2)-(0,1,1)_{96}$ |
+| TSS SAV | SARIMA$(1,0,0)-(2,1,0)_{96}$ |
+
+: Selected SARIMA hyperparameters for the target variables {#tbl-sarima}
+
+
+## Training, validation, and test sets
+
+For LSTM training, one year of data from November 25, 2022, 07:00 a.m. to November 24, 2023, 06:45 a.m. was used. For validation, four months representing one month per season were selected: winter from November 24, 2023, 07:00 a.m. to December 23, 2023, 06:45 a.m.; spring from March 15, 2024, 12:00 a.m. to April 14, 2024, 11:45 p.m.; summer from July 1, 2024, 12:00 a.m. to July 31, 2024, 11:45 p.m; and fall from September 1, 2024, 12:00 a.m. to September 30, 2024, 11:45 p.m. Finally, for testing, one single day was used from December 07, 2023, 8:00 p.m. to December 08, 2023, 7:45 p.m. To compare the LSTM results on this test day, the SARIMA model was trained separately for each variable over a ten-day period immediately preceding the test set, from November 27, 2023, 08:00 a.m. to December 07, 2023, 07:45 p.m.
+
+| Model | Dataset | Period | Number of observations |
+|:------|:--------|:-------|-----------------------:|
+| LSTM | Training | Nov. 25, 2022 -- Nov. 24, 2023 | $34944$ |
+| | Validation | Seasonal months in 2023--2024 | $11616$ |
+| | Test | Dec. 07--08, 2023 | $96$ |
+| SARIMA | Training | Nov. 27, 2023 -- Dec. 7, 2023 | $960$ |
+| | Test | Dec. 07--08, 2023 | $96$ |
+
+: Datasets used for the different forecasting models. {#tbl-data-split}
 
 
 # Introduction
