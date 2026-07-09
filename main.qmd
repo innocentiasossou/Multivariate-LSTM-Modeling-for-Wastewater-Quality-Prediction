@@ -5,7 +5,7 @@
 
 # Case study and datasets
 
-&nbsp;&nbsp;&nbsp; Efficient management of wastewater is a major challenge for large urban areas, both for environmental protection and for the optimization of treatment plant processes. In the Île-de-France region, SIAAP is responsible for the transport and treatment of wastewater, operating a network of approximately $400$ km (Figure @fig-reseau-siaap) of collectors and several treatment plants, including the Seine aval plant (La Frette), one of the largest in Europe.
+&nbsp;&nbsp;&nbsp; Efficient management of wastewater is a major challenge for large urban areas, both for environmental protection and for the optimization of treatment plant processes. In the Île-de-France region, SIAAP is responsible for the transport and treatment of wastewater, operating a network of approximately $400$ km (@fig-reseau-siaap) of collectors and several treatment plants, including the Seine aval plant (La Frette), one of the largest in Europe.
 
 ![The wastewater treatment plants and the 5 outfalls arriving at Seine aval[^siaap]](Pictures/AXE2-F20_anglais_modifié.jpg){#fig-reseau-siaap width=100%}
 
@@ -39,7 +39,7 @@ In summary, the proposed LSTM architecture is characterized by:
 
 \node[align=left, font=\normalsize] at (0,0) {
 \begin{tabular}{rl}
-\textcolor{gray}{Input:} & \textbf{$960$ time steps and $12$ features} \\
+\textcolor{gray}{Input:} & \textbf{960 time steps and 12 features} \\
 \textcolor{gray}{Output:} & \textbf{$h$ time steps} \\
 \textcolor{gray}{Layers:} & \textbf{1 LSTM layer} \\
 \textcolor{gray}{Hidden dimension:} & \textbf{256 units} \\
@@ -65,7 +65,7 @@ For instance, when $h = 96$ (corresponding to a $24$-hour horizon), the model pr
 
 - Second, a univariate SARIMA model is fitted for each target variable. A ten-day training window is used for model estimation, from November 27, 2023 at 8:00 p.m. to December 07, 2023 at 7:45 p.m. Both graphical analysis and a periodogram-based test reveal a daily seasonality, leading to $s=96$. The remaining hyperparameters are selected following the methodology of @box1976analysis. 
 
-Table @tbl-sarima summarizes the selected parameters for each variable. These models serve as linear and naive benchmarks against which the nonlinear LSTM model is evaluated.
+@tbl-sarima summarizes the selected parameters for each variable. These models serve as linear and naive benchmarks against which the nonlinear LSTM model is evaluated.
 
 | Time series | Models |
 |:------------|:-------|
@@ -90,6 +90,38 @@ For LSTM training, one year of data from November 25, 2022, 07:00 a.m. to Novemb
 | | Test | Dec. 07--08, 2023 | $96$ |
 
 : Datasets used for the different forecasting models. {#tbl-data-split}
+
+
+# Forecasting results and model comparison
+
+\hspace{0.5cm} Model performance was evaluated using the Mean Absolute Error (MAE) and the Mean Absolute Percentage Error (MAPE), defined respectively as:
+$$ \text{MAE} = \frac{1}{n} \sum_{t=1}^{n} |y_t - \hat{y}_t|,
+\quad 
+\text{MAPE} = \frac{100}{n} \sum_{t=1}^{n} \left| \frac{y_t - \hat{y}_t}{y_t} \right|.
+$$
+After training each model, predictions are generated for one day ($h = 96$). All models are evaluated on the same test set to ensure a fair comparison. The figures in Figure <!--@fig-predictions--> illustrate the forecasting results for $h = 96$.
+
+<!--![One-day forecasting comparison between the LSTM model and the baseline models](){#fig-predictions}-->
+
+The performance measures for all variables are reported in @tbl-results.
+
+: Forecasting performance (MAE and MAPE) of all models for a forecasting horizon of $h=96$. The symbol * indicates the best performance (lowest error) and ** indicates the second best performance for each metric within each row. {#tbl-results}
+
+| Model       | Metric   | pH SAV | Temperature SAV | Conductivity SAV | TSS SAV |
+|:------------|:-------------|:-------:|:----------------:|:-----------------:|:--------:|
+| **Persistence** | MAE | 0.140 | 2.872 | 602.056 | 49.902 |
+|         | MAPE (\%) | $2.175^{**}$ | $23.789^{**}$ | $48.176^{**}$ | 42.935 |
+| **SARIMA**| MAE | 0.154 | 2.829 | 656.196 | 38.291 |
+|       | MAPE (\%) | 2.424 | 23.502 | 52.611 | $32.679^{**}$ |
+| **LSTM**| MAE | 0.081 | 1.278 | 278.018 | 37.348 |
+|      | MAPE (\%) | $1.300^{*}$ | $10.620^{*}$ | $19.094^{*}$ | $31.097^{*}$ |
+
+The results indicate that the LSTM model outperforms both the persistence and SARIMA approaches for all variables on this test dataset. This test period was specifically selected to include strong variations compared to previous days, making it particularly challenging for forecasting models. The improvements are especially pronounced for highly non-linear and noisy variables such as Conductivity SAV and Temperature SAV, where the LSTM significantly reduces both error metrics. For TSS SAV, although the SARIMA model slightly outperforms the LSTM in terms of MAE, the LSTM remains competitive and achieves the best MAPE. The persistence model generally exhibits the poorest performance, particularly for variables with strong temporal variability, thereby confirming the added value of data-driven learning approaches.
+
+# Conclusion
+
+\hspace{0.5cm} In this study, LSTM neural networks were applied to multivariate time series forecasting in wastewater treatment plants. The results show that LSTM models are able to capture both short-term dynamics and long-term dependencies in high-frequency environmental data. Moreover, the LSTM model demonstrates competitive performance compared to classical SARIMA and persistence approaches, while offering greater robustness and stability. In particular, once the hyperparameters are tuned, the LSTM model can be applied to different test periods without the need for re-estimation, provided that the general data structure remains consistent. Nevertheless, in periods characterized by weak variability or predominantly linear dynamics, the LSTM model may perform similarly or slightly worse than simpler linear models. This suggests that no single model is universally optimal across all regimes. Future work should therefore focus on developing more stable and adaptive modelling strategies in terms of hyperparameter sensitivity. In particular, encoder–decoder architectures such as the LSTM-Attention-LSTM model @wen2023time have demonstrated improved performance over standard LSTM networks by integrating attention mechanisms to better capture temporal dependencies.
+
 
 
 # Introduction
