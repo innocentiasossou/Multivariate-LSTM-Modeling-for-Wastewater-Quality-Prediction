@@ -88,11 +88,7 @@ df_train_10j.index = pd.DatetimeIndex(df_train_10j.index.values, freq = df_train
 ```
 
 
-
 ```{python}
-# eval: false
-
-
 # Data transformation
 
 # a and b represent the endpoints of the interval to which the data will belong
@@ -124,9 +120,6 @@ df_val_list = [df_val1, df_val2, df_val3, df_val4]
 
 
 ```{python}
-# eval: false
-
-
 # LSTM Model
 
 # Dataset for LSTM
@@ -155,7 +148,6 @@ lstm_multi.load_weights("scripts/All_models/model_lstm.weights.h5")
 ```
 
 
-
 ```{python}
 # Reconstruction of the SARIMA models that had been saved
 
@@ -172,11 +164,32 @@ results_temp = load_sarima_params(df_train_10j["Temperature SAV"],
                                    "scripts/All_models/best_model_temp.json")
 
 # TSS
-results_tss = load_sarima_params(df_train_10j["TSS SAV"], 
+results_mes = load_sarima_params(df_train_10j["TSS SAV"], 
                                    "scripts/All_models/best_model_tss.json")
                                    
 ```
 
+
+```{python}
+# Forecasting with all models
+
+sarima_models = {
+    "Conductivity SAV": results_condu,
+    "pH SAV": results_ph,
+    "Temperature SAV": results_temp,
+    "TSS SAV": results_mes
+}
+
+# all_errors is a dataframe which contains all models errors
+all_errors = plot_compare_models(lstm_model = lstm_multi,
+                    sarima_models = sarima_models,
+                    tests = tests_multi_1j, 
+                    cols = df_train.columns[:4],
+                    scaler = scaler,
+                    df_test = df_test_1j,
+                    df_sav = df_sav, lag = 96)
+                    
+```
 
 
 
@@ -235,7 +248,7 @@ In summary, the proposed LSTM architecture is characterized by:
 ```
 
 
-## Baseline models  {#sec-baseline-models}
+## Baseline models
 
 Two benchmark models are used in order to assess the contribution of the LSTM model to the modelling and forecasting of the studied variables.
 
@@ -247,7 +260,7 @@ For instance, when $h = 96$ (corresponding to a $24$-hour horizon), the model pr
 
 - Second, a univariate SARIMA model is fitted for each target variable. A ten-day training window is used for model estimation, from November 27, 2023 at 8:00 p.m. to December 07, 2023 at 7:45 p.m. Both graphical analysis and a periodogram-based test reveal a daily seasonality, leading to $s=96$. The remaining hyperparameters are selected following the methodology of @box1976analysis. 
 
-@tbl-sarima summarizes the selected parameters for each variable. Further details on the model identification procedure are provided in [Appendix @sec-app-SARIMA-identification]. These models serve as linear and naive benchmarks against which the nonlinear LSTM model is evaluated.
+@tbl-sarima summarizes the selected parameters for each variable. Further details on the model identification procedure are provided in <!--Appendix @app-SARIMA-identification-->. These models serve as linear and naive benchmarks against which the nonlinear LSTM model is evaluated.
 
 | Time series | Models |
 |:------------|:-------|
@@ -281,49 +294,22 @@ $$ \text{MAE} = \frac{1}{n} \sum_{t=1}^{n} |y_t - \hat{y}_t|,
 \quad 
 \text{MAPE} = \frac{100}{n} \sum_{t=1}^{n} \left| \frac{y_t - \hat{y}_t}{y_t} \right|.
 $$
-After training each model, predictions are generated for one day ($h = 96$). All models are evaluated on the same test set to ensure a fair comparison. The figures in @fig-predictions illustrate the forecasting results for $h = 96$.
+After training each model, predictions are generated for one day ($h = 96$). All models are evaluated on the same test set to ensure a fair comparison. The figures in Figure <!--@fig-predictions--> illustrate the forecasting results for $h = 96$.
 
-
-```{python}
-#| label: fig-predictions
-#| fig-cap: "One-day forecasting comparison between the LSTM model and the baseline models."
-
-
-# Forecasting with all models
-
-sarima_models = {
-    "Conductivity SAV": results_condu,
-    "pH SAV": results_ph,
-    "Temperature SAV": results_temp,
-    "TSS SAV": results_tss
-}
-
-# all_errors is a dataframe which contains all models errors
-all_errors = plot_compare_models_pdf_display(lstm_model = lstm_multi,
-                    sarima_models = sarima_models,
-                    tests = tests_multi_1j, 
-                    cols = df_train.columns[:4],
-                    scaler = scaler,
-                    df_test = df_test_1j,
-                    df_sav = df_sav, lag = 96)
-                    
-```
-
+<!--![One-day forecasting comparison between the LSTM model and the baseline models.](){#fig-predictions}-->
 
 The performance measures for all variables are reported in @tbl-results.
 
+: Forecasting performance (MAE and MAPE) of all models for a forecasting horizon of $h=96$. The symbol * indicates the best performance (lowest error) and ** indicates the second best performance for each metric within each row. {#tbl-results}
 
-```{python}
-# eval: false
-
-table = create_quarto_table(all_errors)
-
-from IPython.display import display, Markdown
-
-display(Markdown(table))
-
-```
-
+| Model       | Metric   | pH SAV | Temperature SAV | Conductivity SAV | TSS SAV |
+|:------------|:-------------|:-------:|:----------------:|:-----------------:|:--------:|
+| **Persistence** | MAE | 0.140 | 2.872 | 602.056 | 49.902 |
+|         | MAPE (\%) | $2.175^{**}$ | $23.789^{**}$ | $48.176^{**}$ | 42.935 |
+| **SARIMA**| MAE | 0.154 | 2.829 | 656.196 | 38.291 |
+|       | MAPE (\%) | 2.424 | 23.502 | 52.611 | $32.679^{**}$ |
+| **LSTM**| MAE | 0.081 | 1.278 | 278.018 | 37.348 |
+|      | MAPE (\%) | $1.300^{*}$ | $10.620^{*}$ | $19.094^{*}$ | $31.097^{*}$ |
 
 The results indicate that the LSTM model outperforms both the persistence and SARIMA approaches for all variables on this test dataset. This test period was specifically selected to include strong variations compared to previous days, making it particularly challenging for forecasting models. The improvements are especially pronounced for highly non-linear and noisy variables such as Conductivity SAV and Temperature SAV, where the LSTM significantly reduces both error metrics. For TSS SAV, although the SARIMA model slightly outperforms the LSTM in terms of MAE, the LSTM remains competitive and achieves the best MAPE. The persistence model generally exhibits the poorest performance, particularly for variables with strong temporal variability, thereby confirming the added value of data-driven learning approaches.
 
@@ -335,211 +321,215 @@ Beyond the Seine aval case study, the proposed workflow, from data preprocessing
 
 
 
-\appendix
-
-# SARIMA hyperparameter identification {#sec-app-SARIMA-identification}
-
+# Appendix A: SARIMA hyperparameter identification {#app-SARIMA-identification}
 
 It is well known that, if $d$ and $D$ are nonnegative integers, then the process $\{X_t\}$ is a SARIMA$(p, d, q) - (P, D, Q)_s$ process with period $s$ if the differenced series $Y_t = (1 - B)^d (1 - B^s)^D X_t$ follows a causal ARMA process given by  
-$$\phi(B) \Phi(B^s) Y_t = \theta(B) \Theta(B^s) \varepsilon_t, \quad \{\varepsilon_t\} \sim WN(0, \sigma^2),$$
+    $$\phi(B) \Phi(B^s) Y_t = \theta(B) \Theta(B^s) \varepsilon_t, \quad \{\varepsilon_t\} \sim WN(0, \sigma^2),$$
+    where  
+    $\phi(z) = 1 - \phi_1 z - \dots - \phi_p z^p$,
+    $\Phi(z) = 1 - \Phi_1 z - \dots - \Phi_P z^P$, 
+    $\theta(z) = 1 + \theta_1 z + \dots + \theta_q z^q$ and 
+    $\Theta(z) = 1 + \Theta_1 z + \dots + \Theta_Q z^Q.$
     
-where  
-$\phi(z) = 1 - \phi_1 z - \dots - \phi_p z^p$, $\Phi(z) = 1 - \Phi_1 z - \dots - \Phi_P z^P$, $\theta(z) = 1 + \theta_1 z + \dots + \theta_q z^q$ and $\Theta(z) = 1 + \Theta_1 z + \dots + \Theta_Q z^Q.$
-
-The seven hyperparameters ($p$, $d$, $q$, $P$, $D$, $Q$ and $s$) were determined for each univariate SARIMA model associated with the different variables.
+The seven hyperparameters ($p, \quad d, \quad q, \quad P, \quad D, \quad Q \text{ and } s$) were determined for each univariate SARIMA model associated with the different variables.
 
 
-## Checking for stationarity
-
-Based on the graphical analysis of each series (@fig-graph) and confirmed by the periodogram test, a seasonality equal to $s = 96$ was identified for all series. Then, $D = 1$ was chosen for all time series.
 
 
-```{python}
-#| label: fig-graph
-#| fig-cap: "Training dataset used for SARIMA training."
+# Introduction
 
+## About this document
 
-fig, axes = plt.subplots(2, 2, figsize = (14, 10))
-axes = axes.flatten()
+This document, accompanied by the [customized GitHub repository](https://github.com/computorg/template-computo-python/), provides a template for writing contributions to **Computo** [@computo].
 
-cols = df_train_10j.columns.drop("Total flow")
+::: {.callout-tip}
+## Note
+This document provides only the key formatting principles. For a detailed, step-by-step guide on preparing your article and submitting it to Computo, please consult the [guidelines for authors](https://computo-journal.org/site/guidelines-authors.html).
+:::
 
-for i, col in enumerate(cols):
-    ax = axes[i]
+## Quarto
 
-    df_train_10j[col].plot(ax = ax)
-    ax.set_title(f"{col}")
-    
-plt.tight_layout()
-plt.show()
-    
+[Quarto](https://quarto.org/) is a versatile formatting system for authoring documents integrating markdown, LaTeX and code blocks interpreted either via Jupyter or Knitr (thus supporting Python, R and Julia). It relies on the [Pandoc](https://pandoc.org/MANUAL.html) document converter.
+
+## Requirements
+
+You need [quarto](https://quarto.org/) installed on your system and the [Computo extension](https://github.com/computorg/computo-quarto-extension) to prepare your document. For the latter, once quarto is installed, run the following to install the extension in the current directory (it creates a `_extension` directory which is ignored by git thanks to `.gitignore` by default):
+
+```.bash
+quarto add computorg/computo-quarto-extension
 ```
 
+[`Python`](https://www.python.org/) and [`Jupyter`](https://jupyter.org/install) must be installed on your computer.
 
-To check the stationarity of the series for choosing each value of $d$, the Augmented Dickey–Fuller (ADF) test and the Kwiatkowski–Phillips–Schmidt–Shin (KPSS) test were used. The results presented in @tbl-stationarity-test were obtained using the $10$-day training set.
+# Formatting
 
+This section covers basic formatting guidelines for quarto documents.
 
-| Differentiated time series ($(1-B^s)X_t$) | ADF test | KPSS test |
-|:---|:---:|:---:|
-| Conductivity SAV | Not stationary | Not stationary |
-| pH SAV | Stationary | Stationary |
-| Temperature SAV | Not stationary | Not stationary |
-| TSS SAV | Stationary | Stationary |
+To render a document, run `quarto render`. By default, both PDF and HTML documents are generated:
 
-: Stationarity testing results. {#tbl-stationarity-test}
+```.bash
+quarto render # renders both HTML and PDF
+```
 
+::: {.callout-tip}
+## Note
 
-Both tests produced similar results for the four differenced series on this training dataset. The pH SAV and TSS SAV series are stationary according to both tests; therefore, $d = 0$ and $D = 1$ for these series. In contrast, the Conductivity SAV and Temperature SAV series are not stationary. Therefore, the stationarity of the series $(1 - B)(1 - B^s) X_t$ was assessed, where $X_t$ denotes each time series (@tbl-stationarity-test1).
+To check the syntax of the formatting below, you can use the `</> source` button at the top right of this document.
+:::
 
+## Basic markdown formatting
 
-| Differentiated time series ($(1-B)(1-B^s)X_t$) | ADF test | KPSS test |
-|:----------------------------------------|:----------:|:----------:|
-| Conductivity SAV | Stationary | Stationary |
-| Temperature SAV | Stationary | Stationary |
+**Bold text** or _italic_
 
-: Stationarity testing results after first-order and seasonal differencing. {#tbl-stationarity-test1}
+- This is a list
+- With more elements
+- It isn't numbered.
 
+But we can also do a numbered list
 
-Using both tests, these series were found to be stationary, implying that $d = 1$ and $D = 1$ for Conductivity SAV  and Temperature SAV. In general, @tbl-d-and-D summarizes the values of $d$ and $D$ identified for all variables.
+1. This is my first item
+2. This is my second item
+3. This is my third item
 
+## Mathematics
 
-| Time series |  $d$  |  $D$  |
-|:---|:---:|:---:|
-| Conductivity SAV | $1$ | $1$ |
-| pH SAV | $0$ | $1$ |
-| Temperature SAV | $1$ | $1$ |
-| TSS SAV | $0$ | $1$ |
+### Mathematical formulae
 
-: $d$ and $D$ values. {#tbl-d-and-D}
+[LaTeX](https://www.latex-project.org/) code is natively supported[^lualatex], which makes it possible to use mathematical formulae:
 
+[^lualatex]: We use [lualatex](https://lualatex.org/) for this purpose.
 
-The parameter $d$ was allowed to vary between 0 and 1, as the test data may exhibit an unstable trend not observed in the training data.
+$$
+f(x_1, \dots, x_n; \mu, \sigma^2) =
+\frac{1}{\sigma \sqrt{2\pi}} \exp{\left(- \frac{1}{2\sigma^2}\sum_{i=1}^n(x_i - \mu)^2\right)}
+$$
 
+It is also possible to cross-reference an equation, see @eq-mylabel:
 
-## Models identification
+$$
+\begin{aligned}
+D_{x_N} & = \frac12
+\left[\begin{array}{cc}
+x_L^\top & x_N^\top \end{array}\right] \,
+\left[\begin{array}{cc}  L_L & B \\ B^\top & L_N \end{array}\right] \,
+\left[\begin{array}{c}
+x_L \\ x_N \end{array}\right] \\
+& = \frac12 (x_L^\top L_L x_L + 2 x_N^\top B^\top x_L + x_N^\top L_N x_N),
+\end{aligned}
+$$ {#eq-mylabel}
 
-The next step is to determine the maximum value of the seasonal and non-seasonal orders of the AR components (parameters $p$ and $P$) and MA components (parameters $q$ and $Q$), based on the Autocorrelation function (ACF) and the Partial Autocorrelation function (PACF) plots of each stationary series. This may refer to the differenced series obtained after the previous step. The ACFs illustrate the correlation between a variable and its past values, while the PACFs evaluate the correlation between a variable and a specific lag, removing the effect of intermediate lags. Different maximum values of these parameters have been identified using the graphs in @fig-acf-pacf and the @tbl-maximum-param.
+### Theorems and other amsthem-like environments
 
+Quarto includes a nice support for theorems, with predefined prefix labels for theorems, lemmas, proposition, etc. see [this page](https://quarto.org/docs/authoring/cross-references.html#theorems-and-proofs). Here is a simple example:
 
-```{python}
-#| label: fig-acf-pacf
-#| fig-cap: "ACF and PACF plots used for identifying the parameters $p$, $q$, $P$, and $Q$."
+::: {#thm-slln}
+## Strong law of large numbers
 
+The sample average converges almost surely to the expected value:
 
-col1 = df_train_10j.columns.drop(['pH SAV', 'TSS SAV', 'Total flow'])
-col = df_train_10j.columns.drop(["Conductivity SAV", "Temperature SAV", "Total flow"])
+$$\overline{X}_n\ \xrightarrow{\text{a.s.}}\ \mu \qquad\textrm{when}\ n \to \infty.$$
+:::
 
-lag = 400
-lag1 = 400
+See @thm-slln.
 
-fig = plt.figure(figsize = (18, 20))
-layout = (len(col1) + len(col), 3)
+## Python Code
 
+Quarto uses either Jupyter or knitr to render code chunks. This can be triggered in the yaml header. In this tutorial, we use `Jupyter` (`Python` and `Jupyter` must be installed on your computer).
 
-# First group: diff(96).diff()
-for j, name in enumerate(col1):
+``` yaml
+---
+title: "My Document"
+author: "Jane Doe"
+jupyter: python3
+---
+```
 
-    ts1_ax = plt.subplot2grid(layout, (j, 0))
-    ts2_ax = plt.subplot2grid(layout, (j, 1))
-    ts3_ax = plt.subplot2grid(layout, (j, 2))
+`python` code chunks may be embedded as follows:
 
-    series = df_train_10j[name].diff(96).diff().dropna()
+```{python python-code}
+import numpy as np
+x = np.random.normal(0, 1, 10)
+x
+```
 
-    series.plot(ax = ts1_ax)
-    smt.graphics.plot_acf(series, lags = lag, ax = ts2_ax)
-    smt.graphics.plot_pacf(series, lags = lag1, ax = ts3_ax, method = "ywm")
+## Figures
 
-    ts1_ax.set_title(name + ' diff(96).diff()')
-    ts2_ax.set_title('ACF of diff(96).diff() of ' + name)
-    ts3_ax.set_title('PACF of diff(96).diff() of ' + name)
+Plots can be generated as follows:
 
-    ts2_ax.set_ylim(-0.7, 1.1)
-    ts3_ax.set_ylim(-0.7, 1.1)
+```{python stem-plot}
+#| label: fig-stem-plot
+#| fig-cap: "A basic Stem plot"
 
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Second group: diff(96)
-offset = len(col1)
+x = np.linspace(0.1, 2 * np.pi, 41)
+y = np.exp(np.sin(x))
 
-for j, name in enumerate(col):
-
-    ts1_ax = plt.subplot2grid(layout, (offset + j, 0))
-    ts2_ax = plt.subplot2grid(layout, (offset + j, 1))
-    ts3_ax = plt.subplot2grid(layout, (offset + j, 2))
-
-    series = df_train_10j[name].diff(96).dropna()
-
-    series.plot(ax = ts1_ax)
-    smt.graphics.plot_acf(series, lags = lag, ax = ts2_ax)
-    smt.graphics.plot_pacf(series, lags = lag1, ax = ts3_ax, method = "ywm")
-
-    ts1_ax.set_title(name + ' diff(96)')
-    ts2_ax.set_title('ACF of diff(96) of ' + name)
-    ts3_ax.set_title('PACF of diff(96) of ' + name)
-
-    ts2_ax.set_ylim(-0.7, 1.1)
-    ts3_ax.set_ylim(-0.7, 1.1)
-
-
-plt.tight_layout()
+plt.stem(x, y)
 plt.show()
 ```
 
+It is also possible to create figures from static images:
+
+:::{#fig-logo}
+
+![](https://raw.githubusercontent.com/computorg/comm/main/design/logo_text_vertical.png){height=200}
+
+Computo logo (label)
+:::
 
 
-| **Time series** | $p_{\max}$ | $q_{\max}$ | $P_{\max}$ | $Q_{\max}$ |
-|:---|:---:|:---:|:---:|:---:|
-| Conductivity SAV | 1 | 2 | 2 | 2 |
-| pH SAV | 2 | 1 | 2 | 2 |
-| Temperature SAV | 3 | 2 | 2 | 2 |
-| TSS SAV | 2 | 1 | 2 | 2 |
+## Tables
 
-: Maximum values of $p$, $q$, $P$, and $Q$. {#tbl-maximum-param}
+Tables (with label: `@tbl-mylabel` renders @tbl-mylabel) can be generated with markdown as follows
 
+| Tables   |      Are      |  Cool |
+|----------|:-------------:|------:|
+| col 1 is |  left-aligned | $1600 |
+| col 2 is |    centered   |   $12 |
+| col 3 is | right-aligned |    $1 |
+: my table caption {#tbl-mylabel}
 
-The appropriate values for the parameters $p$ and $q$ are indicated by the first significant autocorrelations outside the lower and upper confidence limits of the ACF and PACF graphs, while those for $P$ and $Q$ are indicated by the significant autocorrelations at lags multiples of $s = 96$ of the ACF and PACF graphs. However, it should be noted that in practice $P$ and $Q$ are typically less than three @peter2016introduction. For another example based on total flow in South Australia, see @do2022wastewater.
+## Handling references {#sec-references}
 
-With the possible values of $p$, $P$, $q$ and $Q$, several configurations of these parameters were combined for each of the five variables, corresponding to $54$ potential models for Conductivity SAV, $36$ potential models for pH SAV, $81$ potential models for Temperature SAV and $36$ potential models for TSS SAV. The parameter $p$ was restricted to values starting from $1$, unlike the other parameters, which vary from $0$, as the ACF and PACF plots indicate the presence of an autoregressive component in all series. To identify the optimal model, all possible combinations of parameters $(p, d, q) - (P, D, Q, s)$ were evaluated. The selection of the best model for each series was based on several criteria: the Akaike Information Criterion (AIC), the Bayesian Information Criterion (BIC), and the Hannan–Quinn Information Criterion (HQIC), which balance model fit and complexity; the log-likelihood, which measures the goodness of fit; the convergence of the estimation algorithm; and the statistical significance of the estimated coefficients, assessed through p-values. The selected models are reported in @tbl-sarima in @sec-baseline-models.
+### Bibliographic references
 
-## Models diagnostic
+References are displayed as footnotes using
+[BibTeX](http://www.bibtex.org/), e.g. `[@computo]` will be displayed
+as [@computo], where `computo` is the bibtex key for this specific
+entry. The bibliographic information is automatically retrieved from
+the `.bib` file specified in the header of this document (here:
+`references.bib`).
 
-The Ljung-Box test indicated that residuals from models with better test data predictions were non-white noise ($\text{p-value} < 0.05$), while those predicting mean values were white noise. This is confirmed by the ACF and PACF plots of the residuals for each series in @fig-acf-pacf-residuals. 
+### Other cross-references
 
+As already (partially) seen, Quarto includes a mechanism similar to the
+bibliographic references for sections, equations, theorems, figures,
+lists, etc. Have a look at [this
+page](https://quarto.org/docs/authoring/cross-references.html).
 
-```{python}
-#| label: fig-acf-pacf-residuals
-#| fig-cap: "Residuals ACF and PACF."
+## Advanced formatting
 
-fig, axes = plt.subplots(4, 3, figsize = (18, 20))
+Advanced formatting features are possible and documented (including interactive plots, pseudo-code, (Tikz) diagrams, Lua filters, mixing R + Python in the same document), but are beyond the scope of this simple introduction. We point to several entries in this direction.
 
-acf_pacf_resid_pdf_display(results_condu, "Conductivity SAV", axes[0])
-acf_pacf_resid_pdf_display(results_ph, "pH SAV", axes[1])
-acf_pacf_resid_pdf_display(results_temp, "Temperature SAV", axes[2])
-acf_pacf_resid_pdf_display(results_tss, "TSS SAV", axes[3])
+::: {.callout-warning}
+## More information
 
-plt.tight_layout()
-plt.show()
-```
+- [The Quarto web site](https://quarto.org) for comprehensive documentation, including:
+  + [Tutorial](https://quarto.org/docs/get-started/)
+  + [User guide](https://quarto.org/docs/guide/)
+  + [Options reference](https://quarto.org/docs/reference/)
 
-The residual histograms in @fig-densities further indicate departures from normality. Although the residuals did not satisfy the white-noise assumption, the associated models were retained owing to their superior forecasting accuracy.
+- [The template distributed with the Computo Quarto extension](https://computo.sfds.asso.fr/computo-quarto-extension/), which uses such advanced features.
 
+- [Our mock version of the t-SNE paper](https://computo.sfds.asso.fr/published-paper-tsne/), a full and advanced example using Python and the Jupyter kernel.
 
-```{python}
-#| label: fig-densities
-#| fig-cap: "SARIMA models residuals vs Normal distribution."
+- [The previously published papers in Computo](https://computo.sfds.asso.fr/publications/) can be used as references.
 
+:::
 
-fig, axes = plt.subplots(2, 2, figsize = (12, 10))
+# References {.unnumbered}
 
-hist_norm_pdf_display(results_condu, "Conductivity SAV", axes[0, 0])
-hist_norm_pdf_display(results_ph, "pH SAV", axes[0, 1])
-hist_norm_pdf_display(results_temp, "Temperature SAV", axes[1, 0])
-hist_norm_pdf_display(results_tss, "TSS SAV", axes[1, 1])
-
-plt.tight_layout()
-plt.show()
-```
-
-
-# Acknowledgments {.unnumbered}
-
-I am grateful for
+::: {#refs}
+:::

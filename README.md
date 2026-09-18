@@ -10,9 +10,9 @@ License](https://i.creativecommons.org/l/by/4.0/80x15.png)](http://creativecommo
 ### Authors
 
 - [Innocentia Bénédicta
-  Sossou](https://sites.google.com/view/innocentia-sossou-en/home)
-  (Université Paris-Est Créteil, Laboratoire d’Analyse et de
-  Mathématiques Appliquées)
+  Sossou](https://sites.google.com/view/innocentia-sossou-en/home) (Univ
+  Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010
+  Creteil, France)
 - [Sophie Laruelle](https://perso.math.u-pem.fr/laruelle.sophie/)
   (**?meta:by-affiliation.2.name**)
 - [Jacques Printems](https://perso.math.u-pem.fr/printems.jacques/)

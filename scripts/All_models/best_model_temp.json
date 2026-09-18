@@ -1,0 +1,22 @@
+{
+    "order": [
+        1,
+        1,
+        2
+    ],
+    "seasonal_order": [
+        0,
+        1,
+        1,
+        96
+    ],
+    "enforce_stationarity": true,
+    "enforce_invertibility": true,
+    "params": {
+        "ar.L1": 0.9046697433679779,
+        "ma.L1": -0.45302837892621517,
+        "ma.L2": -0.20409305136912376,
+        "ma.S.L96": -0.9057387416472324,
+        "sigma2": 0.0018225315206294697
+    }
+}
