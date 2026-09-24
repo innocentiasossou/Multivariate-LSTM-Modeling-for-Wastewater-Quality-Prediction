@@ -7,9 +7,12 @@ format: gfm
 
 ### Authors
 
-- [{{< meta by-author.1.name.literal >}}]({{< meta by-author.1.url >}}) ({{< meta by-affiliation.1.name >}})
-- [{{< meta by-author.2.name.literal >}}]({{< meta by-author.2.url >}}) ({{< meta by-affiliation.2.name >}})
-- [{{< meta by-author.3.name.literal >}}]({{< meta by-author.3.url >}}) ({{< meta by-affiliation.3.name >}})
+
+- [Innocentia Bénédicta Sossou](https://sites.google.com/view/innocentia-sossou-en/home) (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France)
+- [Sophie Laruelle](https://perso.math.u-pem.fr/laruelle.sophie/) (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France)
+- [Jacques Printems](https://perso.math.u-pem.fr/printems.jacques/) (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France)
+
+
 
 ### Abstract
 

@@ -1,6 +1,6 @@
 # Multivariate LSTM Modeling for Wastewater Quality Prediction
 Innocentia Bénédicta Sossou, Sophie Laruelle, Jacques Printems
-Invalid Date
+2027-12-09
 
 [![build and
 publish](https://github.com/computorg/template-computo-r/actions/workflows/build.yml/badge.svg)](https://github.com/computorg/template-computo-r/actions/workflows/build.yml)
@@ -13,10 +13,12 @@ License](https://i.creativecommons.org/l/by/4.0/80x15.png)](http://creativecommo
   Sossou](https://sites.google.com/view/innocentia-sossou-en/home) (Univ
   Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010
   Creteil, France)
-- [Sophie Laruelle](https://perso.math.u-pem.fr/laruelle.sophie/)
-  (**?meta:by-affiliation.2.name**)
+- [Sophie Laruelle](https://perso.math.u-pem.fr/laruelle.sophie/) (Univ
+  Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010
+  Creteil, France)
 - [Jacques Printems](https://perso.math.u-pem.fr/printems.jacques/)
-  (**?meta:by-affiliation.3.name**)
+  (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050,
+  F-94010 Creteil, France)
 
 ### Abstract
 
