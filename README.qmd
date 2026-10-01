@@ -8,9 +8,8 @@ format: gfm
 ### Authors
 
 
-- [Innocentia Bénédicta Sossou](https://sites.google.com/view/innocentia-sossou-en/home) (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France)
 - [Sophie Laruelle](https://perso.math.u-pem.fr/laruelle.sophie/) (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France)
-- [Jacques Printems](https://perso.math.u-pem.fr/printems.jacques/) (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France)
+- [Innocentia Bénédicta Sossou](https://sites.google.com/view/innocentia-sossou-en/home) (Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France)
 
 
 

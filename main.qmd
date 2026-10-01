@@ -1,4 +1,5 @@
 ```{python}
+#| echo: false  # Does not display the code in the PDF output
 
 """ For more details on the steps and the code, refer to 
 the “scripts” folder, specifically the “main_notebook” notebook."""
@@ -30,6 +31,8 @@ debit_sec = SEC_flow_preprocessing()
 
 
 ```{python}
+#| echo: false
+
 # Construction of the training, validation, and test datasets
 
 # Training set
@@ -90,7 +93,7 @@ df_train_10j.index = pd.DatetimeIndex(df_train_10j.index.values, freq = df_train
 
 
 ```{python}
-# eval: false
+#| echo: false
 
 
 # Data transformation
@@ -124,7 +127,7 @@ df_val_list = [df_val1, df_val2, df_val3, df_val4]
 
 
 ```{python}
-# eval: false
+#| echo: false
 
 
 # LSTM Model
@@ -157,6 +160,8 @@ lstm_multi.load_weights("scripts/All_models/model_lstm.weights.h5")
 
 
 ```{python}
+#| echo: false
+
 # Reconstruction of the SARIMA models that had been saved
 
 # Conductivity
@@ -182,7 +187,9 @@ results_tss = load_sarima_params(df_train_10j["TSS SAV"],
 
 # Introduction
 
-\hspace{0.5cm} In multiple real-world applications, quantities are measured over time, giving rise to time series. A fundamental question is whether, based on past observations, it is possible to predict the future evolution of a series, either in the short or the long term. To address this issue, numerous studies have been conducted, leading to the development of models capable of representing the behavior of time series based on their main characteristics, such as trend, seasonality, and random fluctuations. Among the most prominent statistical models, the Autoregressive Moving Average (ARMA) framework, introduced by @box1976analysis, models a series by expressing present values as a function of past observations and error terms. Its extension to non-stationary time series exhibiting seasonal patterns has led to Seasonal Autoregressive Integrated Moving Average (SARIMA) models, which are widely used in practice, particularly in environmental and industrial applications [@effrosynidis2023time]. However, these models rely on linearity assumptions and are therefore limited to capturing nonlinear relationships between observations. In several real-world settings, time series exhibit complex dynamics and nonlinear relationships between variables. To overcome these limitations, machine learning approaches have been developed, particularly recurrent neural networks (RNNs), which are specifically designed to model sequential data. These models rely on an internal state that is continuously updated as new observations become available. Nevertheless, standard RNNs encounter difficulties when dealing with long input sequences, due to the loss of information over time, mainly due to the vanishing gradient problem [@bengio1994learning]. To address these limitations, Long Short-Term Memory (LSTM) architectures, a variant of RNNs introduced by @hochreiter1997long, have been proposed. These models incorporate both short-term and long-term memory mechanisms, enabling them to capture temporal dependencies over extended periods more effectively. They have since demonstrated strong performance in a wide range of applications, particularly for forecasting complex time series [@zhang2019deep]. The approach is based on a multivariate LSTM model applied to data describing wastewater quality at the inlet of the Seine aval (SIAAP) treatment plant. After presenting the context and the data, the configuration of the different models is detailed, followed by an analysis of the forecasting performance and a comparison of the approaches.
+
+
+&nbsp;&nbsp;&nbsp; In multiple real-world applications, quantities are measured over time, giving rise to time series. A fundamental question is whether, based on past observations, it is possible to predict the future evolution of a series, either in the short or the long term. To address this issue, numerous studies have been conducted, leading to the development of models capable of representing the behavior of time series based on their main characteristics, such as trend, seasonality, and random fluctuations. Among the most prominent statistical models, the Autoregressive Moving Average (ARMA) framework, introduced by @box1976analysis, models a series by expressing present values as a function of past observations and error terms. Its extension to non-stationary time series exhibiting seasonal patterns has led to Seasonal Autoregressive Integrated Moving Average (SARIMA) models, which are widely used in practice, particularly in environmental and industrial applications [@effrosynidis2023time]. However, these models rely on linearity assumptions and are therefore limited to capturing nonlinear relationships between observations. In several real-world settings, time series exhibit complex dynamics and nonlinear relationships between variables. To overcome these limitations, machine learning approaches have been developed, particularly recurrent neural networks (RNNs), which are specifically designed to model sequential data. These models rely on an internal state that is continuously updated as new observations become available. Nevertheless, standard RNNs encounter difficulties when dealing with long input sequences, due to the loss of information over time, mainly due to the vanishing gradient problem [@bengio1994learning]. To address these limitations, Long Short-Term Memory (LSTM) architectures, a variant of RNNs introduced by @hochreiter1997long, have been proposed. These models incorporate both short-term and long-term memory mechanisms, enabling them to capture temporal dependencies over extended periods more effectively. They have since demonstrated strong performance in a wide range of applications, particularly for forecasting complex time series [@zhang2019deep]. The approach is based on a multivariate LSTM model applied to data describing wastewater quality at the inlet of the Seine aval (SIAAP) treatment plant. After presenting the context and the data, the configuration of the different models is detailed, followed by an analysis of the forecasting performance and a comparison of the approaches.
 
 
 # Case study and datasets
@@ -208,7 +215,7 @@ The data collected from Seine aval show missing data and wide variations, with p
 
 ## LSTM model and hyperparameter selection
 
-A multivariate LSTM configuration is used to model and forecast the four variables of interest, namely pH, temperature, conductivity, and TSS. Prior to model training, a Min–Max scaling transformation was applied to normalize the data within the interval $(-1,1)$ over the training and validation sets. Input–output sequences were then constructed using a sliding window approach. An input sequence length of ten days (corresponding to 960 time steps at a 15-minute sampling rate) was used to predict the next $h$ time steps ahead (e.g., $h = 96$ corresponds to a one-day forecasting horizon). Following the model specification, a key issue concerns the selection of its hyperparameters, including the optimization algorithm, the learning rate, the loss function used as the objective function, the number of LSTM layers, and the number of units per layer. As recommended by @geron2022hands, a faster variant of stochastic gradient descent such as Adam (Adaptive moment estimation, @kingma2015adam) is particularly suitable for large-scale neural networks. Recent studies in real-world applications have also adopted Adam [@song2024multi, @yaqoob2025predictive], and it is therefore used in this work. The model is trained using the Huber loss function, which is more robust to outliers than the mean squared error. 
+&nbsp;&nbsp;&nbsp; A multivariate LSTM configuration is used to model and forecast the four variables of interest, namely pH, temperature, conductivity, and TSS. Prior to model training, a Min–Max scaling transformation was applied to normalize the data within the interval $(-1,1)$ over the training and validation sets. Input–output sequences were then constructed using a sliding window approach. An input sequence length of ten days (corresponding to 960 time steps at a 15-minute sampling rate) was used to predict the next $h$ time steps ahead (e.g., $h = 96$ corresponds to a one-day forecasting horizon). Following the model specification, a key issue concerns the selection of its hyperparameters, including the optimization algorithm, the learning rate, the loss function used as the objective function, the number of LSTM layers, and the number of units per layer. As recommended by @geron2022hands, a faster variant of stochastic gradient descent such as Adam (Adaptive moment estimation, @kingma2015adam) is particularly suitable for large-scale neural networks. Recent studies in real-world applications have also adopted Adam [@song2024multi, @yaqoob2025predictive], and it is therefore used in this work. The model is trained using the Huber loss function, which is more robust to outliers than the mean squared error. 
 Finally, a Bayesian grid search procedure is employed to determine the optimal number of layers, the number of units per layer, and the learning rate. 
 
 In summary, the proposed LSTM architecture is characterized by:
@@ -237,7 +244,7 @@ In summary, the proposed LSTM architecture is characterized by:
 
 ## Baseline models  {#sec-baseline-models}
 
-Two benchmark models are used in order to assess the contribution of the LSTM model to the modelling and forecasting of the studied variables.
+&nbsp;&nbsp;&nbsp; Two benchmark models are used in order to assess the contribution of the LSTM model to the modelling and forecasting of the studied variables.
 
 - First, a persistence model is considered. For a forecasting horizon $h$, the model consists of repeating the observed trajectory over the previous $h$ time steps. In other words, the predicted sequence is given by:
 $$
@@ -261,7 +268,7 @@ For instance, when $h = 96$ (corresponding to a $24$-hour horizon), the model pr
 
 ## Training, validation, and test sets
 
-For LSTM training, one year of data from November 25, 2022, 07:00 a.m. to November 24, 2023, 06:45 a.m. was used. For validation, four months representing one month per season were selected: winter from November 24, 2023, 07:00 a.m. to December 23, 2023, 06:45 a.m.; spring from March 15, 2024, 12:00 a.m. to April 14, 2024, 11:45 p.m.; summer from July 1, 2024, 12:00 a.m. to July 31, 2024, 11:45 p.m; and fall from September 1, 2024, 12:00 a.m. to September 30, 2024, 11:45 p.m. Finally, for testing, one single day was used from December 07, 2023, 8:00 p.m. to December 08, 2023, 7:45 p.m. To compare the LSTM results on this test day, the SARIMA model was trained separately for each variable over a ten-day period immediately preceding the test set, from November 27, 2023, 08:00 a.m. to December 07, 2023, 07:45 p.m.
+&nbsp;&nbsp;&nbsp; For LSTM training, one year of data from November 25, 2022, 07:00 a.m. to November 24, 2023, 06:45 a.m. was used. For validation, four months representing one month per season were selected: winter from November 24, 2023, 07:00 a.m. to December 23, 2023, 06:45 a.m.; spring from March 15, 2024, 12:00 a.m. to April 14, 2024, 11:45 p.m.; summer from July 1, 2024, 12:00 a.m. to July 31, 2024, 11:45 p.m; and fall from September 1, 2024, 12:00 a.m. to September 30, 2024, 11:45 p.m. Finally, for testing, one single day was used from December 07, 2023, 8:00 p.m. to December 08, 2023, 7:45 p.m. To compare the LSTM results on this test day, the SARIMA model was trained separately for each variable over a ten-day period immediately preceding the test set, from November 27, 2023, 08:00 a.m. to December 07, 2023, 07:45 p.m.
 
 | Model | Dataset | Period | Number of observations |
 |:------|:--------|:-------|-----------------------:|
@@ -276,7 +283,7 @@ For LSTM training, one year of data from November 25, 2022, 07:00 a.m. to Novemb
 
 # Forecasting results and model comparison
 
-\hspace{0.5cm} Model performance was evaluated using the Mean Absolute Error (MAE) and the Mean Absolute Percentage Error (MAPE), defined respectively as:
+&nbsp;&nbsp;&nbsp; Model performance was evaluated using the Mean Absolute Error (MAE) and the Mean Absolute Percentage Error (MAPE), defined respectively as:
 $$ \text{MAE} = \frac{1}{n} \sum_{t=1}^{n} |y_t - \hat{y}_t|,
 \quad 
 \text{MAPE} = \frac{100}{n} \sum_{t=1}^{n} \left| \frac{y_t - \hat{y}_t}{y_t} \right|.
@@ -285,6 +292,7 @@ After training each model, predictions are generated for one day ($h = 96$). All
 
 
 ```{python}
+#| echo: false
 #| label: fig-predictions
 #| fig-cap: "One-day forecasting comparison between the LSTM model and the baseline models."
 
@@ -314,7 +322,7 @@ The performance measures for all variables are reported in @tbl-results.
 
 
 ```{python}
-# eval: false
+#| echo: false
 
 table = create_quarto_table(all_errors)
 
@@ -329,9 +337,9 @@ The results indicate that the LSTM model outperforms both the persistence and SA
 
 # Conclusion
 
-\hspace{0.5cm} In this study, LSTM neural networks were applied to multivariate time series forecasting in wastewater treatment plants. The results show that LSTM models are able to capture both short-term dynamics and long-term dependencies in high-frequency environmental data. Moreover, the LSTM model demonstrates competitive performance compared to classical SARIMA and persistence approaches, while offering greater robustness and stability. In particular, once the hyperparameters are tuned, the LSTM model can be applied to different test periods without the need for re-estimation, provided that the general data structure remains consistent. Nevertheless, in periods characterized by weak variability or predominantly linear dynamics, the LSTM model may perform similarly or slightly worse than simpler linear models. This suggests that no single model is universally optimal across all regimes. Future work should therefore focus on developing more stable and adaptive modelling strategies in terms of hyperparameter sensitivity. In particular, encoder–decoder architectures such as the LSTM-Attention-LSTM model @wen2023time have demonstrated improved performance over standard LSTM networks by integrating attention mechanisms to better capture temporal dependencies.
+&nbsp;&nbsp;&nbsp; In this study, LSTM neural networks were applied to multivariate time series forecasting in wastewater treatment plants. The results show that LSTM models are able to capture both short-term dynamics and long-term dependencies in high-frequency environmental data. Moreover, the LSTM model demonstrates competitive performance compared to classical SARIMA and persistence approaches, while offering greater robustness and stability. In particular, once the hyperparameters are tuned, the LSTM model can be applied to different test periods without the need for re-estimation, provided that the general data structure remains consistent. Nevertheless, in periods characterized by weak variability or predominantly linear dynamics, the LSTM model may perform similarly or slightly worse than simpler linear models. This suggests that no single model is universally optimal across all regimes. Future work should therefore focus on developing more stable and adaptive modelling strategies in terms of hyperparameter sensitivity. In particular, encoder–decoder architectures such as the LSTM-Attention-LSTM model @wen2023time have demonstrated improved performance over standard LSTM networks by integrating attention mechanisms to better capture temporal dependencies.
 
-Beyond the Seine aval case study, the proposed workflow, from data preprocessing to 24-hour-ahead forecasting, can be applied to other wastewater treatment plants, provided that comparable data are available. In particular, this requires high-frequency measurements, a sufficiently long historical record, and multiple variables sampled at compatible frequencies. It is also desirable for the dataset to cover both dry periods and rainfall events, so that the model can learn the regime changes associated with these conditions. In this context, a multivariate LSTM model could be retrained using data from the new treatment plant. However, simple benchmark models, such as the persistence model or SARIMA, should first be evaluated before resorting to an LSTM model. Indeed, in the presence of strong seasonality, linear models may remain difficult to outperform when the series exhibit predominantly linear relationships and relatively stable dynamics. Conversely, the benefits of an LSTM model may be more pronounced in the presence of nonlinear relationships between variables, long-term temporal dependencies, or regime changes, for example between dry periods and rainfall events. Therefore, a practical implementation should begin by establishing simple benchmark models after data preprocessing. The temporal structure of the series should then be analyzed (ACF/PACF, seasonality and variability), and relevant explanatory variables should be identified before being incorporated into the model. Finally, the multivariate LSTM model could be retrained on the new data, and its performance gain relative to the benchmark models evaluated. However, the transferability of this approach to other wastewater treatment plants remains to be assessed.
+&nbsp;&nbsp;&nbsp; Beyond the Seine aval case study, the proposed workflow, from data preprocessing to 24-hour-ahead forecasting, can be applied to other wastewater treatment plants, provided that comparable data are available. In particular, this requires high-frequency measurements, a sufficiently long historical record, and multiple variables sampled at compatible frequencies. It is also desirable for the dataset to cover both dry periods and rainfall events, so that the model can learn the regime changes associated with these conditions. In this context, a multivariate LSTM model could be retrained using data from the new treatment plant. However, simple benchmark models, such as the persistence model or SARIMA, should first be evaluated before resorting to an LSTM model. Indeed, in the presence of strong seasonality, linear models may remain difficult to outperform when the series exhibit predominantly linear relationships and relatively stable dynamics. Conversely, the benefits of an LSTM model may be more pronounced in the presence of nonlinear relationships between variables, long-term temporal dependencies, or regime changes, for example between dry periods and rainfall events. Therefore, a practical implementation should begin by establishing simple benchmark models after data preprocessing. The temporal structure of the series should then be analyzed (ACF/PACF, seasonality and variability), and relevant explanatory variables should be identified before being incorporated into the model. Finally, the multivariate LSTM model could be retrained on the new data, and its performance gain relative to the benchmark models evaluated. However, the transferability of this approach to other wastewater treatment plants remains to be assessed.
 
 
 
@@ -355,6 +363,7 @@ Based on the graphical analysis of each series (@fig-graph) and confirmed by the
 
 
 ```{python}
+#| echo: false
 #| label: fig-graph
 #| fig-cap: "Training dataset used for SARIMA training."
 
@@ -422,6 +431,7 @@ The next step is to determine the maximum value of the seasonal and non-seasonal
 
 
 ```{python}
+#| echo: false
 #| label: fig-acf-pacf
 #| fig-cap: "ACF and PACF plots used for identifying the parameters $p$, $q$, $P$, and $Q$."
 
@@ -506,6 +516,7 @@ The Ljung-Box test indicated that residuals from models with better test data pr
 
 
 ```{python}
+#| echo: false
 #| label: fig-acf-pacf-residuals
 #| fig-cap: "Residuals ACF and PACF."
 
@@ -524,6 +535,7 @@ The residual histograms in @fig-densities further indicate departures from norma
 
 
 ```{python}
+#| echo: false
 #| label: fig-densities
 #| fig-cap: "SARIMA models residuals vs Normal distribution."
 
@@ -542,4 +554,10 @@ plt.show()
 
 # Acknowledgments {.unnumbered}
 
-I am grateful for
+
+The authors would like to thank the Syndicat Interdépartemental pour l’Assainissement de l’Agglomération Parisienne (SIAAP) for its financial support through the Mocopée applied research program, as well as for providing the data used in this study. 
+They also thank Jacques Printems for his support throughout this work.
+
+
+
+

@@ -375,9 +375,9 @@ def plot_compare_models_pdf_display(lstm_model, sarima_models, tests, cols, scal
 def create_quarto_table(results, horizon = 96):
 
     variables = [
+        "Conductivity SAV",
         "pH SAV",
         "Temperature SAV",
-        "Conductivity SAV",
         "TSS SAV"
     ]
 
