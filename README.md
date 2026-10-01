@@ -1,6 +1,6 @@
 # Multivariate LSTM Modeling for Wastewater Quality Prediction
 Sophie Laruelle, Innocentia Bénédicta Sossou
-2026-09-25
+2026-10-01
 
 [![build and
 publish](https://github.com/computorg/template-computo-r/actions/workflows/build.yml/badge.svg)](https://github.com/computorg/template-computo-r/actions/workflows/build.yml)

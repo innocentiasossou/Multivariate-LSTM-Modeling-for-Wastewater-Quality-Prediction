@@ -188,7 +188,6 @@ results_tss = load_sarima_params(df_train_10j["TSS SAV"],
 # Introduction
 
 
-
 &nbsp;&nbsp;&nbsp; In multiple real-world applications, quantities are measured over time, giving rise to time series. A fundamental question is whether, based on past observations, it is possible to predict the future evolution of a series, either in the short or the long term. To address this issue, numerous studies have been conducted, leading to the development of models capable of representing the behavior of time series based on their main characteristics, such as trend, seasonality, and random fluctuations. Among the most prominent statistical models, the Autoregressive Moving Average (ARMA) framework, introduced by @box1976analysis, models a series by expressing present values as a function of past observations and error terms. Its extension to non-stationary time series exhibiting seasonal patterns has led to Seasonal Autoregressive Integrated Moving Average (SARIMA) models, which are widely used in practice, particularly in environmental and industrial applications [@effrosynidis2023time]. However, these models rely on linearity assumptions and are therefore limited to capturing nonlinear relationships between observations. In several real-world settings, time series exhibit complex dynamics and nonlinear relationships between variables. To overcome these limitations, machine learning approaches have been developed, particularly recurrent neural networks (RNNs), which are specifically designed to model sequential data. These models rely on an internal state that is continuously updated as new observations become available. Nevertheless, standard RNNs encounter difficulties when dealing with long input sequences, due to the loss of information over time, mainly due to the vanishing gradient problem [@bengio1994learning]. To address these limitations, Long Short-Term Memory (LSTM) architectures, a variant of RNNs introduced by @hochreiter1997long, have been proposed. These models incorporate both short-term and long-term memory mechanisms, enabling them to capture temporal dependencies over extended periods more effectively. They have since demonstrated strong performance in a wide range of applications, particularly for forecasting complex time series [@zhang2019deep]. The approach is based on a multivariate LSTM model applied to data describing wastewater quality at the inlet of the Seine aval (SIAAP) treatment plant. After presenting the context and the data, the configuration of the different models is detailed, followed by an analysis of the forecasting performance and a comparison of the approaches.
 
 
@@ -220,26 +219,7 @@ Finally, a Bayesian grid search procedure is employed to determine the optimal n
 
 In summary, the proposed LSTM architecture is characterized by:
 
-```{=latex}
-\begin{center}
-\begin{tikzpicture}[scale=0.78, transform shape]
-
-\draw[fill=blue!5, rounded corners=10pt, line width=1pt] (-7.6,-2.0) rectangle (7.6,2.0);
-
-\node[align=left, font=\normalsize] at (0,0) {
-\begin{tabular}{rl}
-\textcolor{gray}{Input:} & \textbf{960 time steps and 12 features} \\
-\textcolor{gray}{Output:} & \textbf{$h$ time steps} \\
-\textcolor{gray}{Layers:} & \textbf{1 LSTM layer} \\
-\textcolor{gray}{Hidden dimension:} & \textbf{256 units} \\
-\textcolor{gray}{Optimizer:} & \textbf{Adam} \\
-\textcolor{gray}{Stopping:} & \textbf{Early Stopping}
-\end{tabular}
-};
-
-\end{tikzpicture}
-\end{center}
-```
+![LSTM architecture](Pictures/lstm_configuration.png){#fig-lstm width=100%}
 
 
 ## Baseline models  {#sec-baseline-models}
