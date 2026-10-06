@@ -35,7 +35,7 @@ citation:
   doi: "10.5072/computo.0000" # placeholder DOI (10.5072 is the official DOI test prefix), replace once assigned
 format:
   computo-html: default
-  computo-pdf:            # default didn't display greek letters so it was changed by this
-    pdf-engine: pdflatex
-    fontfamily: libertinus
+  computo-pdf: default           # default didn't display greek letters so it was changed by this
+    #pdf-engine: pdflatex
+    #fontfamily: libertinus
 jupyter: python3
