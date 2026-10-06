@@ -18,7 +18,7 @@ author:
     url: https://sites.google.com/view/innocentia-sossou-en/home
     affiliations:
       - name: Univ Paris Est Creteil, Univ Gustave Eiffel, CNRS, LAMA UMR8050, F-94010 Creteil, France    
-date: 10-01-2026
+date: 10-06-2026
 date-modified: last-modified
 abstract: >+
   The proposed approach relies on high-frequency multivariate time series collected at the Seine aval (SIAAP \footnote{Syndicat Interdépartemental pour l’Assainissement de l’Agglomération Parisienne}) treatment plant, including pH, temperature, conductivity, and total suspended solids, as well as exogenous variables related to precipitation and measurements from an upstream plant. The objective is to forecast wastewater quality over a 24-hour horizon. A multivariate Long Short-Term Memory (LSTM) recurrent neural network is implemented to capture complex temporal dependencies and nonlinear patterns in the data. The model is trained on one year of data and validated on four months of data (one per season), and is compared with a persistence model and SARIMA models. The evaluation shows an overall superiority of the LSTM model, particularly for variables exhibiting high levels of noise and nonlinearity.
@@ -35,5 +35,7 @@ citation:
   doi: "10.5072/computo.0000" # placeholder DOI (10.5072 is the official DOI test prefix), replace once assigned
 format:
   computo-html: default
-  computo-pdf: default
+  computo-pdf:            # default didn't display greek letters so it was changed by this
+    pdf-engine: pdflatex
+    fontfamily: libertinus
 jupyter: python3

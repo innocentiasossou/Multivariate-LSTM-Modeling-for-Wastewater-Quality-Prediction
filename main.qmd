@@ -539,5 +539,8 @@ The authors would like to thank the Syndicat Interdépartemental pour l’Assain
 They also thank Jacques Printems for his support throughout this work.
 
 
+# AI Statement  {.unnumbered}
+
+Generative AI tools were used during the preparation of this article to provide limited assistance with language and technical issues. These tools were mainly used to translate text from French to English and vice versa, improve grammar and wording, and help understand and correct errors in Python code and LaTeX documents. They were also occasionally used to generate small parts of code for specific tasks, which were reviewed and adapted by the authors. All scientific content, methodological choices, analyses, results, interpretations, and conclusions were developed and validated by the authors.
 
 
