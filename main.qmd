@@ -7,7 +7,7 @@ the “scripts” folder, specifically the “main_notebook” notebook."""
 # Importing the files and data used
 
 import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2" # To hide warning about GPU
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3" # To hide warning and errors about GPU in html version
 
 import tensorflow as tf
 
